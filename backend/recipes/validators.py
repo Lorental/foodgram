@@ -3,8 +3,8 @@
 """
 import re
 
-from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.utils.deconstruct import deconstructible
 
 
