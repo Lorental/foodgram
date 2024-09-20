@@ -6,6 +6,7 @@ import csv
 import os
 
 from django.conf import settings
+from django.db.transaction import atomic
 from django.core.management.base import BaseCommand
 
 from recipes.models import Ingredient, Tag
@@ -19,7 +20,7 @@ FILE_MODELS = {
 
 def import_csv(file_model, file_path):
     """Импортирует данные из CSV файлов в базу данных."""
-    with open(file_path, encoding='UTF-8') as csv_file:
+    with open(file_path, encoding='UTF-8') as csv_file, atomic():
         reader = csv.reader(csv_file)
         next(reader)
         objects = []
@@ -54,4 +55,4 @@ class Command(BaseCommand):
                 import_csv(model, file_path)
                 self.stdout.write(f'Finished importing {file}')
             except Exception as error:
-                self.stderr.write(str(error))
+                raise Exception(self.stderr.write(str(error)))

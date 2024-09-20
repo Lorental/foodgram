@@ -421,6 +421,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 {'tags': 'Обязательное поле!'}
             )
         tags_data = data.get('tags')
+        # попробовал убрать в функцию, но ведет себя при этом откровенно
+        # странно, просто отбивая и возвращая фолсы по дефолту, не смог 
+        # разобраться в проблеме, опыта пока маловато, прошу понять и простить
         if len(tags_data) != len(set(tags_data)):
             raise serializers.ValidationError(
                 {'tags': 'Тэг уже добавлен!'}

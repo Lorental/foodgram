@@ -37,7 +37,7 @@ from .serializers import (
     TagSerializer,
     UserSubscriptionSerializer,
 )
-from .viewset import BasePagination
+from .paginators import BasePagination
 from .filters import IngredientFilter, RecipeFilter
 from recipes.models import (
     User,
@@ -281,6 +281,17 @@ class RecipeViewSet(ModelViewSet):
         """Метод для получения короткой ссылки."""
         get_object_or_404(Recipe, id=pk)
         domain = os.getenv('DOMAIN')
+        '''
+        Покурил документацию и все же не очень решаемая задача с помощью
+        реверса, т.к. функция реверс все равно возвращает урл апишный и 
+        дальше его нужно транкать убирая лишние параметры в текущей реализации.
+        Можно конечно решить конструкцией вида как указал ниже в комментах
+        но кажется что для текущей реализации избыточно. В целом можно было
+        бы решить другим путем, но тогда весь модуль ссылок надо переписывать
+        вместе с конструкцией хранения ссылок.
+        '''
+        # trunk_words = {'/get-link/', '/api'}
+        # long_url = (request.build_absolute_uri()).replace(*trunk_words)
         long_url = f'https://{domain}/recipes/{pk}/'
         domain_prefix = f'https://{domain}/s/'
         short_link = shorten_url(long_url, is_permanent=True)
