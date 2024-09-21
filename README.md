@@ -35,8 +35,39 @@
 - ALLOWED_HOSTS=127.0.0.1,localhost,ваш_доменный_адрес,ваш_IP_адрес
 - DEBUG=False
 - USE_SQLITE=False (параметр для быстрой смены БД с PostgreSQL на SQLite)
+- DOMAIN=127.0.0.1 (параметр для указания вашего домена, без него не будут работать короткие ссылки)
+
+
+### Что нужно для локального развертывания
+1. Скачать репозиторий, установить докер, поместить .env файл (пример в файле env.example) и запустить docker-compose.yml следующей командой 
+```
+docker-compose -f docker-compose.yml up -d 
+```
+
+2. Затем соберите зависимости (можете сделать это руками в контейнере, дело вкуса)
+```
+docker-compose -f docker-compose.yml exec backend python manage.py migrate
+docker-compose -f docker-compose.yml exec backend python manage.py import_csv
+docker-compose -f docker-compose.yml exec backend python manage.py collectstatic
+docker-compose -f docker-compose.yml exec backend cp -r /app/static/. /backend_static/static/
+```
+3. Если развертывание происходит на сервере, то важно помнить, что дефолтный порт (указан в compose файле для gateway = 8001), поэтому при использовании внешней прокси / ингресса нужно соответствующим образом прописать на прокси настройки редиректов (в т.ч. для облегчения себе жизни при работе с циклом жизни сертификатов). Т.к. в проекте включена защита от CSRF, то нужно учитывать настройку http_host. Пример конфигурации для внешней прокси на nginx ниже
+```
+server {
+        server_name <your_ip> <your_domain>;
+
+        location / {
+                proxy_set_header Host $http_host;
+                proxy_pass http://127.0.0.1:8001;
+        }
+```
+
+### Для продуктивного развертывания
+1. Все аналогично шагам выше, но нужно убрать .env значения в ваш Vault / Conjure и использовать workflow файл как заготовку для переноса в ваше продакшен окружение (зависит от того как именно устроен ваш CI/CD).
 
 ### Тестовые доступы
 https://foodgram.learnguide.io
 admin@admin.ru
 admin11
+
+##
