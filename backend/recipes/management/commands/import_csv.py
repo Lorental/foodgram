@@ -54,5 +54,5 @@ class Command(BaseCommand):
                 self.stdout.write(f'Start importing {file}')
                 import_csv(model, file_path)
                 self.stdout.write(f'Finished importing {file}')
-            except Exception as error:
-                raise Exception(self.stderr.write(str(error)))
+            except Exception:
+                raise
